@@ -10,7 +10,7 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .glow-text { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
-    
+
     /* Container für die Animation */
     .page-container {
       position: relative;
@@ -37,7 +37,6 @@
     .slide-in.active {
       left: 0;
     }
-
   </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
@@ -50,14 +49,35 @@
       <p class="text-lg text-gray-400 mb-8">
         Ich mache hier hoffentlich Guides zu den neuen FF Online Savage Raids.
       </p>
-      <a href="page2.html"
-         class="px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg hover:bg-indigo-600 transition duration-300 slide-link">
+      <button id="learnMoreBtn"
+         class="px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg hover:bg-indigo-600 transition duration-300">
         Mehr erfahren
-      </a>
+      </button>
     </div>
+
+    <!-- Neue Seite mit Slide-In Effekt -->
+    <div id="newPage" class="slide-in">
+      <div class="max-w-2xl text-center px-6 py-10">
+        <h2 class="text-4xl font-bold text-gray-100">🔍 Mehr Informationen</h2>
+        <p class="text-lg text-gray-400 mt-4 mb-8">
+          Hier findest du bald alle Infos zu den FF Savage Raids!
+        </p>
+        <button id="backBtn"
+           class="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300">
+          Zurück
+        </button>
+      </div>
+    </div>
+
   </div>
 
   <script>
+    // Slide-in für neue Seite
+    document.getElementById("learnMoreBtn").addEventListener("click", function() {
+      document.getElementById("newPage").classList.add("active");
+    });
+
+    // Zurück-Slide zur Hauptseite
     document.getElementById("backBtn").addEventListener("click", function() {
       document.getElementById("newPage").classList.remove("active");
     });
@@ -65,3 +85,4 @@
 
 </body>
 </html>
+
