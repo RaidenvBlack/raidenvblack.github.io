@@ -50,33 +50,14 @@
       <p class="text-lg text-gray-400 mb-8">
         Ich mache hier hoffentlich Guides zu den neuen FF Online Savage Raids.
       </p>
-      <button id="learnMoreBtn"
-         class="px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg hover:bg-indigo-600 transition duration-300">
+      <a href="page2.html"
+         class="px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg hover:bg-indigo-600 transition duration-300 slide-link">
         Mehr erfahren
-      </button>
+      </a>
     </div>
-
-    <!-- Neue Seite (wird per Animation hereingeslidet) -->
-    <div id="newPage" class="slide-in">
-      <div class="max-w-2xl text-center px-6 py-10">
-        <h2 class="text-4xl font-bold text-gray-100">🔍 Mehr Informationen</h2>
-        <p class="text-lg text-gray-400 mt-4 mb-8">
-          Hier findest du bald alle Infos zu den FF Savage Raids!
-        </p>
-        <button id="backBtn"
-           class="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300">
-          Zurück
-        </button>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    document.getElementById("learnMoreBtn").addEventListener("click", function() {
-      document.getElementById("newPage").classList.add("active");
-    });
-
     document.getElementById("backBtn").addEventListener("click", function() {
       document.getElementById("newPage").classList.remove("active");
     });
