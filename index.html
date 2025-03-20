@@ -10,36 +10,83 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .glow-text { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
-
-    /* Container for the animation */
+    
+    /* Container for animation */
     .page-container {
       position: relative;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
     }
-
-    /* Animation class for sliding */
+    
+    /* Slide-in effect */
     .slide-in {
       position: absolute;
       top: 0;
       left: 100%;
       width: 100%;
       height: 100%;
-      background-color: #1a1a1a; /* Dark design */
+      background-color: #1a1a1a;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       transition: left 0.6s ease-in-out;
     }
-
-    /* When active, the new page slides in */
+    
+    /* When active, slide in */
     .slide-in.active {
       left: 0;
     }
+    
+    /* Image container */
+    .image-container {
+      position: relative;
+      width: 500px; /* Adjust based on your image */
+      margin: 20px auto;
+    }
+    
+    .image-container img {
+      width: 100%;
+      display: block;
+    }
+    
+    /* Custom Symbol (animated marker) */
+    .marker {
+      position: absolute;
+      font-size: 30px;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    /* Animation when marker appears */
+    .marker.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    
+    /* Button styles */
+    .option-button {
+      padding: 10px 20px;
+      background-color: #4f46e5;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 5px;
+    }
+    
+    .option-button:hover {
+      background-color: #4338ca;
+    }
+    
+    .option-button.active {
+      background-color: #2563eb;
+    }
   </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen"> 
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
   <div class="page-container flex items-center justify-center h-screen w-full">
     
     <!-- Main Page -->
@@ -53,34 +100,90 @@
         Learn More
       </button>
     </div>
-
+    
     <!-- New Page with Slide-In Effect -->
     <div id="newPage" class="slide-in">
-      <div class="max-w-2xl text-center px-6 py-10">
-        <h2 class="text-4xl font-bold text-gray-100">🔍 More Information</h2>
-        <p class="text-lg text-gray-400 mt-4 mb-8">
-          Here, you will soon find all the information about the FF Savage Raids!
-        </p>
-        <button id="backBtn"
-           class="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300">
-          Back
-        </button>
+      <h2 class="text-4xl font-bold text-gray-100 mb-4">🔍 Select a Point</h2>
+      
+      <!-- Clickable Options -->
+      <div id="options" class="flex flex-wrap justify-center">
+          <button class="option-button" data-point="point1">Point 1</button>
+          <button class="option-button" data-point="point2">Point 2</button>
+          <button class="option-button" data-point="point3">Point 3</button>
+          <button class="option-button" data-point="point4">Point 4</button>
+          <button class="option-button" data-point="point5">Point 5</button>
       </div>
+      
+      <!-- Image with markers -->
+      <div class="image-container">
+          <img src="https://static.icy-veins.com/images/ffxiv/dawntrail/raids/m1/waymark.jpg" alt="Map">
+          <!-- Marker element will be created dynamically -->
+      </div>
+      
+      <button id="backBtn"
+         class="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300 mt-4">
+        Back
+      </button>
     </div>
-
   </div>
-
+  
   <script>
     // Slide-in for the new page
     document.getElementById("learnMoreBtn").addEventListener("click", function() {
       document.getElementById("newPage").classList.add("active");
     });
-
+    
     // Slide back to the main page
     document.getElementById("backBtn").addEventListener("click", function() {
       document.getElementById("newPage").classList.remove("active");
     });
+    
+    // Define coordinates and icons for each point
+    const points = {
+        "point1": { x: 100, y: 150, icon: "⭐" },
+        "point2": { x: 250, y: 200, icon: "🔥" },
+        "point3": { x: 350, y: 250, icon: "⚡" },
+        "point4": { x: 400, y: 320, icon: "💀" },
+        "point5": { x: 200, y: 400, icon: "🎯" }
+    };
+    
+    // Handle option button clicks
+    const buttons = document.querySelectorAll(".option-button");
+    buttons.forEach(button => {
+        button.addEventListener("click", function() {
+            const value = this.getAttribute("data-point");
+            
+            // Remove active state from all buttons, then add active to this one.
+            buttons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+            
+            if (value && points[value]) {
+                // Remove any existing marker element.
+                const imageContainer = document.querySelector(".image-container");
+                const oldMarker = document.getElementById("marker");
+                if (oldMarker) {
+                    oldMarker.remove();
+                }
+                // Create a new marker element.
+                const newMarker = document.createElement("div");
+                newMarker.id = "marker";
+                newMarker.className = "marker";
+                newMarker.innerHTML = points[value].icon;
+                newMarker.style.left = points[value].x + "px";
+                newMarker.style.top = points[value].y + "px";
+                
+                // Append the new marker to the image container.
+                imageContainer.appendChild(newMarker);
+                
+                // Force a reflow then add the 'show' class to trigger the animation.
+                void newMarker.offsetWidth;
+                requestAnimationFrame(() => {
+                    newMarker.classList.add("show");
+                });
+            }
+        });
+    });
   </script>
-
 </body>
 </html>
+
