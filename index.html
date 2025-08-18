@@ -1,188 +1,336 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RaidenvWebsite</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Dalamud Plugins</title>
+  <meta name="description" content="Overview, installation and changelogs of my FFXIV Dalamud plugins." />
+  <meta property="og:title" content="My Dalamud Plugins" />
+  <meta property="og:description" content="Overview, installation and changelogs of my FFXIV Dalamud plugins." />
+  <meta property="og:type" content="website" />
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .glow-text { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
-    
-    /* Container for animation */
-    .page-container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+    :root{
+      --bg: #0b0d10;
+      --panel: #111418;
+      --panel-2:#171b21;
+      --text: #e8edf1;
+      --muted:#b7c0c9;
+      --brand:#4cc9f0;
+      --brand-2:#4895ef;
+      --ok:#2ec27e;
+      --warn:#e6a700;
+      --danger:#ef476f;
+      --card: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    
-    /* Slide-in effect */
-    .slide-in {
-      position: absolute;
-      top: 0;
-      left: 100%;
-      width: 100%;
-      height: 100%;
-      background-color: #1a1a1a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      transition: left 0.6s ease-in-out;
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f7f9fc; --panel:#ffffff; --panel-2:#f1f5f9; --text:#0c1116; --muted:#475569; --card: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.02)); --shadow: 0 8px 28px rgba(2,6,23,.08); }
     }
-    
-    /* When active, slide in */
-    .slide-in.active {
-      left: 0;
-    }
-    
-    /* Image container */
-    .image-container {
-      position: relative;
-      width: 500px; /* Adjust based on your image */
-      margin: 20px auto;
-    }
-    
-    .image-container img {
-      width: 100%;
-      display: block;
-    }
-    
-    /* Custom Symbol (animated marker) */
-    .marker {
-      position: absolute;
-      font-size: 30px;
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    
-    /* Animation when marker appears */
-    .marker.show {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    
-    /* Button styles */
-    .option-button {
-      padding: 10px 20px;
-      background-color: #4f46e5;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin: 5px;
-    }
-    
-    .option-button:hover {
-      background-color: #4338ca;
-    }
-    
-    .option-button.active {
-      background-color: #2563eb;
-    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{ margin:0; font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background:var(--bg); color:var(--text); }
+    a{ color:var(--brand-2); text-decoration: none }
+    a:hover{ text-decoration: underline }
+    .container{ max-width:1100px; margin:0 auto; padding: 24px }
+    header.hero{ display:grid; gap:16px; padding: 28px; background:var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); position:relative; overflow:hidden }
+    .hero h1{ margin:0; font-size: clamp(28px, 4vw, 40px) }
+    .hero p{ margin:0; color:var(--muted)}
+    .hero-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center }
+    .btn{ display:inline-flex; align-items:center; gap:10px; background: var(--brand); color:#001018; border:0; padding: 10px 14px; border-radius: 999px; font-weight:600; cursor:pointer; box-shadow: var(--shadow) }
+    .btn.secondary{ background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,.15) }
+    .btn.ghost{ background: transparent; color: var(--text); border: 0; padding:8px 10px }
+    .code{ background: var(--panel-2); border-radius: 10px; padding: 8px 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace }
+
+    /* toolbar */
+    .toolbar{ margin-top: 14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center }
+    #search{ flex:1 1 260px; min-width:200px; border:1px solid rgba(255,255,255,.15); border-radius: 12px; padding: 10px 12px; background: var(--panel-2); color:var(--text) }
+    .chip{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); cursor:pointer; background: transparent }
+    .chip.active{ background: var(--brand); color:#001018; border-color: transparent }
+
+    /* grid */
+    .grid{ display:grid; grid-template-columns: repeat( auto-fit, minmax(280px, 1fr) ); gap: 16px; margin-top: 18px }
+    .card{ background: var(--card); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius); padding: 16px; position:relative; overflow:hidden }
+    .card h3{ margin: 2px 0 8px }
+    .desc{ color:var(--muted); margin:0 0 12px }
+    .tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top: 8px }
+    .tag{ font-size: 12px; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14); color:var(--muted) }
+    .meta{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; color: var(--muted); font-size:13px }
+    .badge{ display:inline-flex; align-items:center; gap:6px; font-size:12px; padding: 4px 8px; border-radius:999px }
+    .ok{ background: rgba(46,194,126,.15); color:#7bf2b7 }
+    .warn{ background: rgba(230,167,0,.18); color:#ffd36b }
+    .danger{ background: rgba(239,71,111,.18); color:#ff9caa }
+    .card-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 12px }
+    .card .btn{ padding:8px 12px }
+    details{ margin-top: 8px }
+    details summary{ cursor:pointer; color: var(--brand-2) }
+    .shots{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:8px; margin-top:8px }
+    .shots img{ width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.1) }
+    footer{ margin: 40px 0 10px; color: var(--muted); text-align:center }
+
+    /* modal */
+    .modal{ position: fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); padding: 18px; z-index: 50 }
+    .modal.open{ display:flex }
+    .modal-card{ background: var(--panel); color:var(--text); border-radius: 16px; width: min(720px, 96vw); box-shadow: var(--shadow); padding: 18px }
+    .modal-card h2{ margin-top:0 }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px }
+    .steps{ display:grid; gap:8px; }
+    .steps li{ background: var(--panel-2); border-radius: 10px; padding: 10px 12px }
+
+    .hidden{ display:none }
   </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <div class="page-container flex items-center justify-center h-screen w-full">
-    
-    <!-- Main Page -->
-    <div class="max-w-2xl text-center px-6 py-10">
-      <h1 class="text-5xl font-bold glow-text">👋 Welcome to RaidenvWebsite</h1>
-      <p class="text-lg text-gray-400 mb-8">
-        Hopefully, I will create guides for the new FF Online Savage Raids here.
-      </p>
-      <button id="learnMoreBtn"
-         class="px-6 py-3 bg-indigo-500 text-white rounded-lg shadow-lg hover:bg-indigo-600 transition duration-300">
-        Learn More
-      </button>
-    </div>
-    
-    <!-- New Page with Slide-In Effect -->
-    <div id="newPage" class="slide-in">
-      <h2 class="text-4xl font-bold text-gray-100 mb-4">🔍 Select a Point</h2>
-      
-      <!-- Clickable Options -->
-      <div id="options" class="flex flex-wrap justify-center">
-          <button class="option-button" data-point="point1">Point 1</button>
-          <button class="option-button" data-point="point2">Point 2</button>
-          <button class="option-button" data-point="point3">Point 3</button>
-          <button class="option-button" data-point="point4">Point 4</button>
-          <button class="option-button" data-point="point5">Point 5</button>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div>
+        <h1>Dalamud Plugins by <span id="devName">DEIN NAME</span></h1>
+        <p>FFXIV tools I built. Find installation, releases, changelogs & screenshots.</p>
       </div>
-      
-      <!-- Image with markers -->
-      <div class="image-container">
-          <img src="https://static.icy-veins.com/images/ffxiv/dawntrail/raids/m1/waymark.jpg" alt="Map">
-          <!-- Marker element will be created dynamically -->
+      <div class="hero-actions">
+        <button class="btn" id="installBtn">Installation guide</button>
+        <button class="btn secondary" id="copyRepoBtn">Copy repo URL</button>
+        <span class="code" id="repoUrlText">https://raw.githubusercontent.com/YOURUSER/YOURREPO/main/repo.json</span>
       </div>
-      
-      <button id="backBtn"
-         class="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300 mt-4">
-        Back
-      </button>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search: name, description or tags…" />
+        <div id="chipBar"></div>
+        <button class="btn ghost" id="resetBtn">Reset filters</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid" id="grid"></section>
+    </main>
+
+    <footer>
+      <p>© <span id="year"></span> <span id="footerName">DEIN NAME</span> • <a id="ghLink" href="#">GitHub</a></p>
+    </footer>
+  </div>
+
+  <!-- Modal: Installation guide -->
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <h2>Dalamud — Add repository</h2>
+      <ol class="steps">
+        <li>Launch FFXIV and open the <strong>Dalamud Plugin Installer</strong> (in‑game menu or chat command <code>/xlplugins</code>).</li>
+        <li>Open <strong>Settings</strong> (⚙️) → <strong>Custom Plugin Repositories</strong>.</li>
+        <li>Click <em>Add</em> and paste this URL: <span class="code" id="repoUrlText2"></span> <button class="btn secondary" id="copyRepoBtn2">Copy</button></li>
+        <li>Save → in the <strong>Plugins</strong> tab search for the desired plugin → <strong>Install</strong>.</li>
+      </ol>
+      <div class="modal-actions">
+        <button class="btn secondary" id="closeModal">Close</button>
+      </div>
     </div>
   </div>
-  
+
   <script>
-    // Slide-in for the new page
-    document.getElementById("learnMoreBtn").addEventListener("click", function() {
-      document.getElementById("newPage").classList.add("active");
-    });
-    
-    // Slide back to the main page
-    document.getElementById("backBtn").addEventListener("click", function() {
-      document.getElementById("newPage").classList.remove("active");
-    });
-    
-    // Define coordinates and icons for each point
-    const points = {
-        "point1": { x: 100, y: 150, icon: "⭐" },
-        "point2": { x: 250, y: 200, icon: "🔥" },
-        "point3": { x: 350, y: 250, icon: "⚡" },
-        "point4": { x: 400, y: 320, icon: "💀" },
-        "point5": { x: 200, y: 400, icon: "🎯" }
-    };
-    
-    // Handle option button clicks
-    const buttons = document.querySelectorAll(".option-button");
-    buttons.forEach(button => {
-        button.addEventListener("click", function() {
-            const value = this.getAttribute("data-point");
-            
-            // Remove active state from all buttons, then add active to this one.
-            buttons.forEach(btn => btn.classList.remove("active"));
-            this.classList.add("active");
-            
-            if (value && points[value]) {
-                // Remove any existing marker element.
-                const imageContainer = document.querySelector(".image-container");
-                const oldMarker = document.getElementById("marker");
-                if (oldMarker) {
-                    oldMarker.remove();
-                }
-                // Create a new marker element.
-                const newMarker = document.createElement("div");
-                newMarker.id = "marker";
-                newMarker.className = "marker";
-                newMarker.innerHTML = points[value].icon;
-                newMarker.style.left = points[value].x + "px";
-                newMarker.style.top = points[value].y + "px";
-                
-                // Append the new marker to the image container.
-                imageContainer.appendChild(newMarker);
-                
-                // Force a reflow then add the 'show' class to trigger the animation.
-                void newMarker.offsetWidth;
-                requestAnimationFrame(() => {
-                    newMarker.classList.add("show");
-                });
-            }
+    /*
+      === KONFIGURATION =====================================================
+      - Trage unten deinen Namen, GitHub-Link und die URL zu deinem Dalamud-Repo (repo.json) ein.
+      - Füge deine Plugins im PLUGINS-Array hinzu (Beispiele enthalten).
+      - Committe diese index.html in ein Repo (z. B. <user>.github.io) → GitHub Pages einschalten → fertig.
+    */
+
+    const DEV_NAME = "Raiden"; // <- ändern
+    const GITHUB_URL = "https://github.com/RaidenvBlack"; // <- ändern
+    const REPO_URL = "https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/repo.json"; // <- ändern
+
+    const PLUGINS = [
+      {
+        id: "GamblePyon",
+        name: "EasyProfitGamble",
+        short: "Helper plugin for Blackjack",
+        description: "Helper plugin for Blackjack",
+        version: "1.0.2.0",
+        game: "Dalamud API 13",
+        stable: true,
+        tags: ["blackjack","gamble","pyon"],
+        repoSlug: "RaidenvBlack/RaidenvPlugins",
+        releases: "https://raw.githubusercontent.com//RaidenvBlack/RaidenvPlugins/main/Gamblev1.zip",
+        docs: "",
+        images: ["https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/icons/gamble.png"],
+        changelog: []
+      },
+      {
+        id: "DcNotify",
+        name: "DcNotify",
+        short: "Mobile or Discord webhook push notifications for Party Finder.",
+        description: "Mobile or Discord Webhook push notifications for the Party Finder.",
+        version: "1.0.1.4",
+        game: "Dalamud API 12",
+        stable: true,
+        tags: ["party-finder","afk","notifications"],
+        repoSlug: "RaidenvBlack/RaidenvPlugins",
+        releases: "https://raw.githubusercontent.com//RaidenvBlack/RaidenvPlugins/main/dcv13.zip",
+        docs: "",
+        images: ["https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/icons/dc.png"],
+        changelog: []
+      },
+      {
+        id: "BlackjackSolver",
+        name: "BlackjackSolver",
+        short: "Blackjack move suggestions, bet helper and customizable calls.",
+        description: "A simple blackjack solver that tells you the best move to make, helps you with bets and customize your calls.",
+        version: "1.0.2.0",
+        game: "Dalamud API 13",
+        stable: true,
+        tags: ["bj","helper","solver","blackjack"],
+        repoSlug: "RaidenvBlack/RaidenvPlugins",
+        releases: "https://raw.githubusercontent.com//RaidenvBlack/RaidenvPlugins/main/BlackjackSolver.zip",
+        docs: "",
+        images: ["https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/icons/casino.png"],
+        changelog: []
+      },
+      {
+        id: "LazyKindness",
+        name: "LazyKindness",
+        short: "Auto‑replies to hello/gg/good night — highly customizable.",
+        description: "Answers for you on hello, gg and Good Night messages! Highly customizable! ",
+        version: "1.0.3.0",
+        game: "Dalamud API 13",
+        stable: true,
+        tags: ["lazy","kindness","helper","chill"],
+        repoSlug: "RaidenvBlack/RaidenvPlugins",
+        releases: "https://raw.githubusercontent.com//RaidenvBlack/RaidenvPlugins/main/Lazy.zip",
+        docs: "",
+        images: ["https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/icons/lazy.png"],
+        changelog: []
+      },
+      {
+        id: "ZeroTweaks",
+        name: "ZeroTweaks",
+        short: "Tweaks: Loot Roll Tracker, ChatGPT, Mare Switcher (Testing).",
+        description: "Tweaks that are already working: Loot Roll Tracker, ChatGPT, Mare switcher",
+        version: "1.0.3.0",
+        game: "Dalamud API 13",
+        stable: false,
+        tags: ["zero","tweaks","helper","loot","tracker"],
+        repoSlug: "RaidenvBlack/RaidenvPlugins",
+        releases: "https://raw.githubusercontent.com//RaidenvBlack/RaidenvPlugins/main/zero.zip",
+        docs: "",
+        images: ["https://raw.githubusercontent.com/RaidenvBlack/RaidenvPlugins/main/icons/zero.png"],
+        changelog: []
+      }
+    ];
+
+    // ======== RENDER ======================================================
+    const el = sel => document.querySelector(sel);
+    const grid = el('#grid');
+    const chipBar = el('#chipBar');
+
+    function tagPalette(all){
+      return Array.from(new Set(all.flatMap(p=>p.tags||[]))).sort();
+    }
+
+    function cardHtml(p){
+      const badge = p.stable ? `<span class=\"badge ok\">Stable</span>` : `<span class="badge warn">Beta</span>`;
+      const tags = (p.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
+      const shots = (p.images||[]).map(src=>`<img loading="lazy" src="${src}" alt="${p.name} Screenshot" />`).join('');
+      const log = (p.changelog||[]).map(i=>`<li><strong>${i.date}:</strong> ${i.text}</li>`).join('');
+      const repoLink = p.repoSlug ? `https://github.com/${p.repoSlug}` : null;
+
+      return `
+        <article class="card" data-tags="${(p.tags||[]).join(',')}">
+          <div class="meta">
+            ${badge}
+            <span>Version ${p.version}</span>
+            <span>${p.game}</span>
+          </div>
+          <h3 id="${p.id}">${p.name}</h3>
+          <p class="desc">${p.short || ''}</p>
+          <p>${p.description || ''}</p>
+
+          <div class="card-actions">
+            <a class="btn" href="#" data-install for-id="${p.id}">Install</a>
+            ${p.releases ? `<a class="btn secondary" href="${p.releases}" target="_blank" rel="noopener">Releases</a>`:''}
+            ${repoLink ? `<a class="btn secondary" href="${repoLink}" target="_blank" rel="noopener">Code (GitHub)</a>`:''}
+          </div>
+
+          ${(p.images && p.images.length) ? `<details><summary>Screenshots</summary><div class="shots">${shots}</div></details>`:''}
+          ${(p.changelog && p.changelog.length) ? `<details><summary>Changelog</summary><ul>${log}</ul></details>`:''}
+          ${(p.docs) ? `<details><summary>Documentation</summary><p>${p.docs}</p></details>`:''}
+        </article>`
+    }
+
+    function render(list){
+      grid.innerHTML = list.map(cardHtml).join('\n');
+      // Hook Install buttons per plugin to open the modal with repo URL
+      grid.querySelectorAll('[data-install]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+      });
+    }
+
+    // ======== SEARCH & TAG FILTER ========================================
+    const state = { q:'', tags: new Set() };
+
+    function applyFilters(){
+      const q = state.q.trim().toLowerCase();
+      const chosen = state.tags;
+      const out = PLUGINS.filter(p=>{
+        const text = `${p.name} ${p.short||''} ${p.description||''} ${(p.tags||[]).join(' ')}`.toLowerCase();
+        const matchQ = !q || text.includes(q);
+        const matchTags = chosen.size===0 || (p.tags||[]).some(t=>chosen.has(t));
+        return matchQ && matchTags;
+      });
+      render(out);
+    }
+
+    function renderChips(){
+      chipBar.innerHTML = '';
+      tagPalette(PLUGINS).forEach(tag=>{
+        const c = document.createElement('button');
+        c.className = 'chip'; c.textContent = `#${tag}`;
+        c.addEventListener('click', ()=>{
+          if(state.tags.has(tag)) state.tags.delete(tag); else state.tags.add(tag);
+          c.classList.toggle('active');
+          applyFilters();
         });
-    });
+        chipBar.appendChild(c);
+      });
+    }
+
+    // ======== MODAL & COPY ===============================================
+    const modal = el('#modal');
+    function openModal(){ modal.classList.add('open'); }
+    function closeModal(){ modal.classList.remove('open'); }
+
+    // ======== BOOT ========================================================
+    (function init(){
+      // header data
+      el('#devName').textContent = DEV_NAME;
+      el('#footerName').textContent = DEV_NAME;
+      el('#ghLink').href = GITHUB_URL;
+      el('#year').textContent = new Date().getFullYear();
+
+      // repo url visuals
+      el('#repoUrlText').textContent = REPO_URL;
+      el('#repoUrlText2').textContent = REPO_URL;
+
+      // copy buttons
+      const copy = () => navigator.clipboard.writeText(REPO_URL).then(()=>{
+        const b = document.createElement('div');
+        b.textContent = 'Copied!';
+        b.style.position='fixed'; b.style.bottom='16px'; b.style.left='50%'; b.style.transform='translateX(-50%)';
+        b.style.background='var(--brand)'; b.style.color='#001018'; b.style.padding='8px 12px'; b.style.borderRadius='999px'; b.style.boxShadow='var(--shadow)';
+        document.body.appendChild(b); setTimeout(()=>b.remove(),1200);
+      });
+      el('#copyRepoBtn').addEventListener('click', copy);
+      el('#copyRepoBtn2').addEventListener('click', copy);
+
+      // modal buttons
+      el('#installBtn').addEventListener('click', openModal);
+      el('#closeModal').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+      // search
+      el('#search').addEventListener('input', (e)=>{ state.q = e.target.value; applyFilters(); });
+      el('#resetBtn').addEventListener('click', ()=>{ state.q=''; state.tags.clear(); el('#search').value=''; renderChips(); applyFilters(); });
+
+      // first render
+      renderChips();
+      applyFilters();
+    })();
   </script>
 </body>
 </html>
